@@ -1,0 +1,38 @@
+# if your are creating multiple services/objects in one file then always define service before deployment as it will keep adding the pods with config as defined in the selector of service object as the deployment object is created
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec: 
+  selector:   ## we ignore matchLabels here bcoz service only matches labels
+    app: second-app
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 8080
+    ## you can define similarly for other ports    
+  type: LoadBalancer  ## LoadBalancer is usre to give acces to the outside world    
+
+---    # these three dashes are user to say that a new object starts now
+
+apiVersion: apps/v1           ##get the api version on the kubernetes official documentation
+kind: Deployment
+metadata: 
+  name: second-app-deployment    ##same as kubectl create deploymeny second-app-deploymeny  
+spec:   
+  replicas: 1
+  selector: 
+    matchLabels:  ## it tells the deployment which pod belongs to the label
+      app: second-app
+      tier: backend
+  template:    ## here we define the pod
+    metadata:
+      labels:
+        app: second-app
+        tier: backend
+    spec: ##specs of the pod    
+      containers: 
+        - name: second-node   # the "-" symbol is for apllying the same configuration for all the pods
+          image: bihari123/kube-first-app:2

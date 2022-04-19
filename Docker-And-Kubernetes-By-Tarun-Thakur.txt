@@ -167,7 +167,9 @@ Developed by Google, Kubernetes is also written in golang
 -- Roll back ( going back to the previous version)
 -- Batch execution (one time, sequential,parallel
 
-@ Kubernetes architecture
++++++++++++++++++++++++++++++
+++ Kubernetes architecture ++
++++++++++++++++++++++++++++++
 
 Kubernetes follows a master-slave (or client-server) architecture
 
@@ -301,6 +303,24 @@ Label selectors are used for filtering . The kube-api-server currently uses two 
 
 @ Node-Selector
 
-One use case for selecting labels is to constrain the set of nodes onto which a pod can schedule i.e. you can tell a pod to only be able to run a particular nodes.  
+One use case for selecting labels is to constrain the set of nodes onto which a pod can schedule i.e. you can tell a pod to only be able to run a particular nodes.
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++ Kubernetes Networking, Services, NodePort and Volumes ++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Kubernetes networking addresses four concerns:-
+
+-- Containers within a pod use networking to communicate via loopback.
+-- Cluster networking provides cummunication between different pods.
+-- The service resources lets you expose an application running in pods to be rechable from outside your cluster.
+-- You can also use services to publish services only for consumption inside your cluster.
+-- container to container communication on the same pod happens through localhost within the containers.
+
+
+
+
+  
 
 
