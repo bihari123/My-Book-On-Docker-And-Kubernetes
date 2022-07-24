@@ -109,12 +109,66 @@ _______________________  _________________________________________  ____________
       3. That image is pulled (downloaded) from the registry and saved in Docker host
       4. Using the saved base image, we build our image and runs the container
       
+
+ +++++++++++++++++++
+ ++ Docker Images ++
+ ++++++++++++++++++++
+  Docker image is a readonly template for creating a container. They are a convinient way to package up applications in a preconfigured environment.
+  Images are made up of a collection of files that bundle together all the essentials- such as installation, application code and dependencies - required to configure a fully operational container environment.
+  There are two ways of creating a Docker image:
+  - **Interactive**: By running a container from an existing Docker image, manually changing that container environment through a series of live steps, and saving the resulting state as a new image.
+  - **Dockerfile**: By constructing a plain-text file, known as a Dockerfile, which provides the specifications for creating a Docker image.
+
+  @ Image Layers 
+  Each of the file that make up the Docker Image is known as a layer. These layers form a series of intermediate images, built one on top of other in the stages, where each layer is dependent on the layer immediately below it. The hierarchy of your layers is key to efficient lifecycle management of your Dockecr images. Thus, you should organize layers that change most often as high up the stack as possible. This is because, when you make changes to a layer in your image. Docker not only rebuilds that particular layer, but all the layers that are built from it. Therefore, a change to a layer at the top of the stack involves the least amount of computational work to rebuild the entire image.
+  @ Container Layer 
+  Each time Docker launches a container from an image, it adds a thin writable layer, known as the container layer, which stores all the changes to the container throughout its runtime. As this layer is the only difference between a live operational container and the source docker image itself, any number of like-for-like containers can potentially share access to the same underlying image while maintainging their own individual state.
+
+                               _____________________ 
+                               | Docker Containers |
+                               ---------------------
+                                       |
+                                       |
+     __________________________________|______________________________________________
+     |                                 |                                              |
+     |                                 |                                              |
+   -------------------         ------------------                       ------------------
+   | writable Layer |          | writable layer |                       | writable layer |
+   -----------------           ------------------                       ------------------
+         A                             A                                          A 
+         |                             |                                          |
+         |                             |                                          |
+         V                             V                                          V
+         --------------------------> Docker Image <------------------------------------                             
+
+
+
+  @ Parent Iamge 
+  In most of the cases, the first layer of the Docker image is known as the parent image. It's the foundation upon which all other layers are built and provides the basic building blocks for your container enviroments. You can find a wide variety of ready-made images for use as your parent image on the public container registry i.e. DockerHub.
+
+  @ Base Image 
+  When you are building your docker image from scratch, the base image is the first layer. 
+
+  @ Docker Maifest 
+  Together with a set of individual layer files, a Docker image also includes an additional fie knwon as manifest. This is essentially a description of the iamge in the JSON format and comprises information such as image tags, a digital signature and details of how to configure the container for different type of host platforms
  
+ ++++++++++++++++++++++++
+ ++ Container Registry ++
+ ++++++++++++++++++++++++
+
+ Container registries are catalogs of storage locations, known as repositories, where you can push and pull container images. The three main registry types are:
+  - Docker Hub: Docker’s own, official image resource where you can access more than 100,000 container images shared by software vendors, open-source projects, and Docker’s community of users. You can also use the service to host and manage your own private images.
+  - Third-party registry services: Fully managed offerings that serve as a central point of access to your own container images, providing a way to store, manage, and secure them without the operational headache of running your own on-premises registry. Examples of third-party registry offerings that support Docker images include Red Hat Quay, Amazon ECR, Azure Container Registry, Google Container Registry
+  - Self-hosted registries: A registry model favored by organizations that prefer to host container images on their own on-premises infrastructure – typically due to security, compliance concerns or lower latency requirements. To run your own self-hosted registry, you’ll need to deploy a registry server. Alternatively, you can set up your own private, remote, and virtual Docker registry.
+
+
+
  +++++++++++++++++++     
  ++ Docker Volume ++
  +++++++++++++++++++
  
  Volume is just a directory inside our container. You can declare the directory as a volume only while creating a container. You can't create volume from existing container. You can share one volume across any number of containers. 
+
  Generally, it is a conventional practive to declare only one volume per container, although you can declare multiple.
  Volume will not be included when you update an image.
  You can map the volume in two ways:-
