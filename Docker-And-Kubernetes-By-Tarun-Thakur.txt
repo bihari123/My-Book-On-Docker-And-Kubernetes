@@ -114,7 +114,7 @@ _______________________  _________________________________________  ____________
  ++ Docker Images ++
  ++++++++++++++++++++
   Docker image is a readonly template for creating a container. They are a convinient way to package up applications in a preconfigured environment.
-  Images are made up of a collection of files that bundle together all the essentials- such as installation, application code and dependencies - required to configure a fully operational container environment.
+  Images are made up of a collection of files that bundle together all the essentials- such as installation, application code and dependencies - required to configure a fully operational container environment. Images are also a convenient way of sharing. Anyone who has an image, can create containers based on the image.
   There are two ways of creating a Docker image:
   - **Interactive**: By running a container from an existing Docker image, manually changing that container environment through a series of live steps, and saving the resulting state as a new image.
   - **Dockerfile**: By constructing a plain-text file, known as a Dockerfile, which provides the specifications for creating a Docker image.
@@ -151,7 +151,78 @@ _______________________  _________________________________________  ____________
 
   @ Docker Maifest 
   Together with a set of individual layer files, a Docker image also includes an additional fie knwon as manifest. This is essentially a description of the iamge in the JSON format and comprises information such as image tags, a digital signature and details of how to configure the container for different type of host platforms
+
+  @ Building Our Own Image With A Dockerfile 
+  For creating a dockerfile, we first create a new file named "Dockerfile" (without any extention). Then, write some instructions like the following (remember than # is a comment):
+
+  ```
+  FROM  node  # base image 
+
+  WORKDIR /app # setting working dir to /app
+
+  COPY . .  # first dot tells the docker to copy the current directory on your local machine. The second dot  after that  tells the docker to copy it to the current directory ("/app") inside the docker container.
+  
+
+  RUN npm intall  # run this command in the working dir of the container 
+
+  EXPOSE 80  # This instruction is only used for documentation purpose. It doesn't do anything. It jus signifies that we intend expose a port (of conatainer) to our local machine 
+
+  CMD ["node", "server.js"]   # also for running command but the difference between RUN and CMD is that RUN is executed when the image is created whereas CMD is executed when container is started.
+  ```
  
+ @ Running A Container Built On Our Image 
+
+ - Building the docker image 
+ ```
+ $ docker build .  # . means current working directory. So here we build an image from the docker file inside our working directory 
+ 
+ $ docker run <image-id>  # run the container based on the image id ( we can also give name to the image while building it)
+ ```
+
+ - Checking all the running containers 
+ ```
+ $ docker ps
+ ```
+
+ - Check all the containers ( even the non running ones)
+ ```
+ $ docker ps -a 
+ ```
+
+ - Stop a particular container 
+ ```
+ $ docker stop <container-id>
+ ```
+
+ - Sharing the port with our local machine ( see teh dockerfile above)
+ ```
+ $ docker run -p 3000:80 <image-id>  #share the port 80 of docker conatiner with port 3000 of local machine 
+ ```
+
+ - delete all images
+ ```
+ $ docker image prune -a 
+ ```
+ As an additional quick side-note: For all docker commands where an ID can be used, you don't always have to copy / write out the full id.
+
+ You can also just use the first (few) character(s) - just enough to have a unique identifier.
+
+ So instead of
+
+ ```
+ $ docker run abcdefg
+ ```
+
+ you could also run
+ ```
+ $ docker run abc
+ ```
+ or, if there's no other image ID starting with "a", you could even run just:
+ ```
+ $ docker run a
+ ```
+ This applies to ALL Docker commands where IDs are needed
+
  ++++++++++++++++++++++++
  ++ Container Registry ++
  ++++++++++++++++++++++++
@@ -161,7 +232,31 @@ _______________________  _________________________________________  ____________
   - Third-party registry services: Fully managed offerings that serve as a central point of access to your own container images, providing a way to store, manage, and secure them without the operational headache of running your own on-premises registry. Examples of third-party registry offerings that support Docker images include Red Hat Quay, Amazon ECR, Azure Container Registry, Google Container Registry
   - Self-hosted registries: A registry model favored by organizations that prefer to host container images on their own on-premises infrastructure – typically due to security, compliance concerns or lower latency requirements. To run your own self-hosted registry, you’ll need to deploy a registry server. Alternatively, you can set up your own private, remote, and virtual Docker registry.
 
+ ++++++++++++++++++++++++++++++++++++
+ ++Sharing the images via DockerHub++
+ ++++++++++++++++++++++++++++++++++++
+ DockerHub is the official registry of Docker where you can find many official images like ubuntu, python, node etc. It contains both public and private images. It also has a free version.
 
+ - go to the DockerHub.com and make an account
+ - make an image, let's call it <image-name>
+ - come to your local machine, and log into your dockerhub account  
+   
+   $ docker login 
+
+ - Then build an image with the same name as <image-name>
+   
+   $ docker build -t <image-name> .
+ 
+ - or you can rename an existing image. 
+   
+   $ docker tag <old-name> <new-name>
+
+ Commands  
+ ```
+ Share: $ docker push <image-name> # for private registry, use host:name 
+ Use: $ docker pull <image-name>
+ ```
+ 
 
  +++++++++++++++++++     
  ++ Docker Volume ++
