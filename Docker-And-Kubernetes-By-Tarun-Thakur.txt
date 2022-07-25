@@ -254,7 +254,9 @@ _______________________  _________________________________________  ____________
  Commands  
  ```
  Share: $ docker push <image-name> # for private registry, use host:name 
- Use: $ docker pull <image-name>
+ Use: $ docker pull <image-name>  # pulls the latest image 
+
+ You can directly use "$ docker use <image>" for using the image. It first checks for the image in the local directory and if it is not present locally, only then it downloads the image from the dockerhub. However, if the image is found locally, the docker will use whatever version is available. It doesn't look for updates.
  ```
  
 
