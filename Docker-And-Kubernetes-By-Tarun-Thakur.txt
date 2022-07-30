@@ -287,6 +287,62 @@ $$ Sharing volume with another container
 ????? Docker port expose ????
 Let's say that we have created an EC2 instance on AWS. This is our host machine on which we are running linux. Now, we create a docker container on it. But how do we access this container over the internet? You might say that hey, we can access it via the IP address. However, docker container doesn't have the IP address of its own. What we need to do is that connect to the EC2 instance via the IP address and connect to the container through it. For that, we have logical ports. These are available oon every machine and they work in transport layer. In desktop computer machines, they are open by default. In this case, we can map the port number 80 of the EC2 instance to the port 80 of the container. Now when you make an HTTP request to the port 80 of the host EC2 instance, it automatically goes to the port 80 of the container. Similarly the response from the container goes back to the port 80 of the EC2 instance and goes to the user.
 
+## All Docker Commands 
+
+1.  build the image based on the docker file present in "." directory i.e. the working directory
+            `$ docker build -t <image-name> . `
+
+2. show all active containers 
+            `$ docker ps `
+
+3. show all containers including the stopped ones            
+            `$ docker ps -a`
+
+4. show the active containers along with the size
+            `$ docker ps -s`
+
+5. show all the containers along with the size
+            `$ docker ps -a -s`   
+           
+6. Start a container 
+            `$ docker start <container-name-or-id>`
+
+7. Run a container in detached mode 
+            `$ docker run -d <image-name>`
+           
+8. Attach ourselves to a running container 
+            `$ docker attach <container-name-or-id>`
+
+9. Fetch past logs of the container
+            `$ docker logs <container-name>`
+
+10. Keep Listening to the logs 
+            `$ docker logs -f <container-name>`
+
+11. Run the container in interactive mode 
+            `$ docker run -it <container-name-or-id>`
+
+12. Start the container in the attached and interactive mode
+            `$ docker start -i -a <container-name-or-id>`
+
+13. Copy files into and from **running** container 
+            ` $ docker cp <directory_source> <directory-target>`
+
+            $ docker cp dummy/. boring_vaughan:/test     ## copy from dummy/. (local directory) into container dire /test (boring vaughan is the container name)
+
+            $ docker cp boring_vaugh:/test dummy
+
+            
+
+## FAQs 
+
+1. What is the difference between docker start and docker run?
+   - docker start executes in detached mode by default whereas docker run executes in attached mode by default. Attached mode means that we are able to see the container activity on our terminal screen. Detached mode means that we are not bale to see that as it executes in background
+   - docker start starts an existing container whereas docker run starts a new container 
+
+2. Difference between running your container in attached mode and interactive mode 
+
+3. difference between -i and -it flag
 
 ################
 ## Kubernetes ##
