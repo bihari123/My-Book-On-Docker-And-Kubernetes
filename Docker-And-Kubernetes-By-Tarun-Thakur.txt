@@ -264,7 +264,10 @@ _______________________  _________________________________________  ____________
  ++ Docker Volume ++
  +++++++++++++++++++
  
- Volume is just a directory inside our container. You can declare the directory as a volume only while creating a container. You can't create volume from existing container. You can share one volume across any number of containers. 
+ Docker sets up a folder/path on your host machine, exact location is unknown to you (=dev). Managed via **docker volume** commands.
+ A defined path in the container is mapped to the created volume/mount.
+ It is great for data which should be persistent but which you don't need to edit directly.
+ You can share one volume across any number of containers. 
 
  Volume will not be included when you update an image. Let's say that you have made a volume in your image and you create a container using the same image. At the time of creating, the volume in the container will have all the files that is present inside the volume if the image. But after that, they have no connection. Whenever you add/delete a file in the volume of the image, it won't be reflected in the container's volume. Post creation, both the volumes start acting independentl Let's say that you have made a volume in your image and you create a container using the same image. At the time of creating, the volume in the container will have all the files that is present inside the volume if the image. But after that, they have no connection. Whenever you add/delete a file in the volume of the image, it won't be reflected in the container's volume. Post creation, both the volumes start acting independently.
 
@@ -276,10 +279,14 @@ _______________________  _________________________________________  ____________
  
  We only create one volume in a container ( it is just a standard practice ).
 
+@ Types of Volumes 
+ - Anonymous Volumes : volume is deleted when the container is deleted. 
+ - Named Volumes : volume stays even if the container is deleted.
+
 @ Benifits of volume
 -- Decoupling container from storage. Named volumes are not deleted even if the container is deleted. Hence, our data is safe. 
 -- Share volume among different containers
--- on deleting the container, volume does not delete. You can still access the volume 
+-- on deleting the container, named volume does not delete. You can still access the volume 
 
 @ Creating Volume from DockerFile 
 
@@ -301,7 +308,8 @@ _______________________  _________________________________________  ____________
 
 @ Creating Volume By Command 
 
- $ docker run -it --name container1 -v /volume2 ubutnu /bin/bash 
+ $ docker run -it --name container1 -v /volume2 ubutnu /bin/bash [ anonymous volume ]
+ $ docker run -it --name container1 -v <volume_name>:/path/to/volume ubuntu 
 
 $$ Sharing volume with another container
 
@@ -309,7 +317,23 @@ $$ Sharing volume with another container
    
    Now, after creating container2 , volume is visible . Whatever you do in one volume , can be seen from other volume
 
-   
++++++++++++++++++
+++ Bind Mounts ++
++++++++++++++++++
+
+The difference between a docker volume and a bind mount is that the bind mount is managed by you whereas the docker volume is managed by docker. In docker volume, although you can use named volume but you still don't know where that volume exists. But in Bind Mount, you define the folder/path on your host machine.
+In the docker volume, the changes made to the code don't reflect in a running container. We need to rebuild the container to get the changes. During development we make a lot of changes, so restarting everytime is comburesome. That's where bind mounts is useful. In bind mount the changes get reflected without restarting the container 
+
+Also, whereas docker volumes are good for data which should be persistent and don't need editing by the dev (directly), bind mounts are great for persistent data directly editable by the dev (ex source code).
+
+```
+$ docker run -d \
+  -it \
+  --name devtest \
+  --mount type=bind,source="$(pwd)"/target,target=/app \
+  nginx:latest
+```
+
 ????? Docker port expose ????
 Let's say that we have created an EC2 instance on AWS. This is our host machine on which we are running linux. Now, we create a docker container on it. But how do we access this container over the internet? You might say that hey, we can access it via the IP address. However, docker container doesn't have the IP address of its own. What we need to do is that connect to the EC2 instance via the IP address and connect to the container through it. For that, we have logical ports. These are available oon every machine and they work in transport layer. In desktop computer machines, they are open by default. In this case, we can map the port number 80 of the EC2 instance to the port 80 of the container. Now when you make an HTTP request to the port 80 of the host EC2 instance, it automatically goes to the port 80 of the container. Similarly the response from the container goes back to the port 80 of the EC2 instance and goes to the user.
 
@@ -352,13 +376,29 @@ Let's say that we have created an EC2 instance on AWS. This is our host machine 
             `$ docker start -i -a <container-name-or-id>`
 
 13. Copy files into and from **running** container 
-            ` $ docker cp <directory_source> <directory-target>`
+            `$ docker cp <directory_source> <directory-target>`
 
-            $ docker cp dummy/. boring_vaughan:/test     ## copy from dummy/. (local directory) into container dire /test (boring vaughan is the container name)
+            `$ docker cp dummy/. boring_vaughan:/test`     ## copy from dummy/. (local directory) into container dire /test (boring vaughan is the container name)
+ 
+            `$ docker cp boring_vaugh:/test dummy`
 
-            $ docker cp boring_vaugh:/test dummy
+14. List all the local volumes 
+            `$ docker volume ls `
 
-            
+15. Create a local volume 
+            `$ docker volume create <volume_name>`
+
+16. Remove a local volume 
+            `$ docker volume rm <volume_name>`
+
+17. Remove all unused docker volume 
+            `$ docker volume prune`
+
+18. Get the details of a volume 
+            `$ docker volume inspect  <volume_name>`
+
+19. Get the info about the container 
+            `$ docker container inspect <container_name>`
 
 ## FAQs 
 
