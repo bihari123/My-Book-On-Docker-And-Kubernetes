@@ -266,23 +266,49 @@ _______________________  _________________________________________  ____________
  
  Volume is just a directory inside our container. You can declare the directory as a volume only while creating a container. You can't create volume from existing container. You can share one volume across any number of containers. 
 
+ Volume will not be included when you update an image. Let's say that you have made a volume in your image and you create a container using the same image. At the time of creating, the volume in the container will have all the files that is present inside the volume if the image. But after that, they have no connection. Whenever you add/delete a file in the volume of the image, it won't be reflected in the container's volume. Post creation, both the volumes start acting independentl Let's say that you have made a volume in your image and you create a container using the same image. At the time of creating, the volume in the container will have all the files that is present inside the volume if the image. But after that, they have no connection. Whenever you add/delete a file in the volume of the image, it won't be reflected in the container's volume. Post creation, both the volumes start acting independently.
+
  Generally, it is a conventional practive to declare only one volume per container, although you can declare multiple.
  Volume will not be included when you update an image.
  You can map the volume in two ways:-
- 1. Container <-------> Container
- 2. Host <------------> Container                              
+ 1. Container <-------> Container  (Container to Container)
+ 2. Host <------------> Container  (Host to Conatiner). If we have a volume in our EC2 machine on AWS then we can then we can share the volume with any container running on that EC2 instance.                             
  
+ We only create one volume in a container ( it is just a standard practice ).
+
 @ Benifits of volume
 -- Decoupling container from storage. Named volumes are not deleted even if the container is deleted. Hence, our data is safe. 
 -- Share volume among different containers
--- on deleting the container, volume does not delete.
+-- on deleting the container, volume does not delete. You can still access the volume 
+
+@ Creating Volume from DockerFile 
+
+  ```
+  From ubuntu
+  Volume  ["/myvolume1"]
+  ```
+ 
+ >> build an image from the dockerfile 
+
+  $ docker build -t myimage . 
+ 
+ >> Create a container from the image and run  
+
+  $ docker run -it --name container1 myimage /bin/bash
+
+ >> Now do ls, you can see volume1
+
+
+@ Creating Volume By Command 
+
+ $ docker run -it --name container1 -v /volume2 ubutnu /bin/bash 
 
 $$ Sharing volume with another container
 
    $ docker run -t --name container2 --privileged=true --volume-from container1  
    
    Now, after creating container2 , volume is visible . Whatever you do in one volume , can be seen from other volume
-   
+
    
 ????? Docker port expose ????
 Let's say that we have created an EC2 instance on AWS. This is our host machine on which we are running linux. Now, we create a docker container on it. But how do we access this container over the internet? You might say that hey, we can access it via the IP address. However, docker container doesn't have the IP address of its own. What we need to do is that connect to the EC2 instance via the IP address and connect to the container through it. For that, we have logical ports. These are available oon every machine and they work in transport layer. In desktop computer machines, they are open by default. In this case, we can map the port number 80 of the EC2 instance to the port 80 of the container. Now when you make an HTTP request to the port 80 of the host EC2 instance, it automatically goes to the port 80 of the container. Similarly the response from the container goes back to the port 80 of the EC2 instance and goes to the user.
