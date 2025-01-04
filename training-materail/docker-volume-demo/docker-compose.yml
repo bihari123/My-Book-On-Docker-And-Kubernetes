@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./local_dir:/app/data   # This mounts your local ./data directory
+
